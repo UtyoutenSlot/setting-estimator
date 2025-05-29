@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>マイジャグラーV 設定判別</title>
+</head>
+<body>
+  <h1>マイジャグラーV 設定判別ツール</h1>
+
+  <h2>入力</h2>
+  <form id="inputForm">
+    <label>BIG回数: <input type="number" id="big"></label><br>
+    <label>REG回数: <input type="number" id="reg"></label><br>
+    <label>総ゲーム数: <input type="number" id="games"></label><br>
+    <button type="button" onclick="judge()">判別</button>
+  </form>
+
+  <h2>結果</h2>
+  <div id="result">ここに結果が表示されます</div>
+
+  <script>
+    function judge() {
+      const big = parseInt(document.getElementById("big").value);
+      const reg = parseInt(document.getElementById("reg").value);
+      const games = parseInt(document.getElementById("games").value);
+
+      const bigProb = big / games;
+      const regProb = reg / games;
+
+      let message = "BIG確率: " + bigProb.toFixed(4) + "<br>" +
+                    "REG確率: " + regProb.toFixed(4) + "<br>";
+
+      // 設定判別（ざっくり）
+      if (regProb >= 1/270) {
+        message += "設定4以上の可能性あり";
+      } else {
+        message += "設定1〜3の可能性が高い";
+      }
+
+      document.getElementById("result").innerHTML = message;
+    }
+  </script>
+</body>
+</html>
