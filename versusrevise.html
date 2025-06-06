@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>バーサスリヴァイズ 設定判別</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    h2 {
+      margin-top: 2em;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="number"] {
+      width: 100px;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ccc;
+    }
+    .note {
+      color: red;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>バーサスリヴァイズ設定判別</h1>
+  <p class="note">※カウントしていないものは空欄のままにしてください（0は「0回引いた」とみなします）</p>
+
+  <div class="section">
+    <h2>① 総ゲーム数</h2>
+    <label>総ゲーム数: <input type="number" id="totalGames"></label>
+    <label>BIG回数: <input type="number" id="bigCount"></label>
+    <label>REG回数: <input type="number" id="regCount"></label>
+    <label>ベルA: <input type="number" id="bellA"></label>
+    <label>ベルB: <input type="number" id="bellB"></label>
+    <label>スイカA: <input type="number" id="suikaA"></label>
+    <label>チェリーB: <input type="number" id="cherryB"></label>
+  </div>
+
+  <div class="section">
+    <h2>② BIG中</h2>
+    <label>BIG中ゲーム数: <input type="number" id="bigGames"></label>
+    <label>角チェリー+ベル: <input type="number" id="bigKakuBell"></label>
+    <label>角チェリー: <input type="number" id="bigKaku"></label>
+    <label>中段チェリー: <input type="number" id="bigChudan"></label>
+  </div>
+
+  <div class="section">
+    <h2>③ VSチャレンジ中</h2>
+    <label>チャレンジ中ゲーム数: <input type="number" id="vschallengeGames"></label>
+    <label>通常リプレイ: <input type="number" id="vschallengeReplay"></label>
+    <label>ハズレ: <input type="number" id="vschallengeHazure"></label>
+  </div>
+
+  <div class="section">
+    <h2>④ VSゲーム中</h2>
+    <label>VSゲーム中ゲーム数: <input type="number" id="vsgameGames"></label>
+    <label>通常リプレイ: <input type="number" id="vsgameReplay"></label>
+    <label>ハズレ: <input type="number" id="vsgameHazure"></label>
+  </div>
+
+  <div class="section">
+    <h2>⑤ REG中</h2>
+    <label>REG中ゲーム数: <input type="number" id="regGames"></label>
+    <label>一枚役: <input type="number" id="regOne"></label>
+    <label>ハズレ: <input type="number" id="regHazure"></label>
+  </div>
+
+  <div style="margin-top: 30px;">
+    <button onclick="judgeSetting()">判別する</button>
+    <button onclick="resetForm()">全データ削除</button>
+  </div>
+
+  <script>
+    function resetForm() {
+      const inputs = document.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => input.value = '');
+    }
+
+    function judgeSetting() {
+      alert("ここに多項分布による判別ロジックを追加予定です。");
+    }
+  </script>
+</body>
+</html>
