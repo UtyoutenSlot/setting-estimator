@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>バーサスリヴァイズ 設定判別ツール</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f8f8f8;
+      border-radius: 10px;
+    }
+    h2 { border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+    .section { margin: 20px 0; }
+    .field { margin: 5px 0; }
+    input[type="number"] { width: 100px; padding: 4px; }
+    button { margin-left: 5px; }
+    .note { font-size: 0.9em; color: #666; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>バーサスリヴァイズ 設定判別ツール（仮）</h1>
+  <p class="note">※カウントしていない項目は「空欄」にしてください。0と入れるとその値として扱われます。</p>
+
+  <form id="versusForm">
+
+    <div class="section">
+      <h2>① 総ゲーム数・小役</h2>
+      <div class="field">総ゲーム数: <input type="number" name="game"></div>
+      <div class="field">BIG回数: <input type="number" name="big"></div>
+      <div class="field">REG回数: <input type="number" name="reg"></div>
+      <div class="field">ベルA: <input type="number" name="bell_a"></div>
+      <div class="field">ベルB: <input type="number" name="bell_b"></div>
+      <div class="field">スイカA: <input type="number" name="suika_a"></div>
+      <div class="field">チェリーB: <input type="number" name="cherry_b"></div>
+    </div>
+
+    <div class="section">
+      <h2>② BIG中</h2>
+      <div class="field">角チェリー＋ベル: <input type="number" name="big_kaku_beru"></div>
+      <div class="field">角チェリー: <input type="number" name="big_kaku"></div>
+      <div class="field">中段チェリー: <input type="number" name="big_chudan"></div>
+    </div>
+
+    <div class="section">
+      <h2>③ バーサスチャレンジ中</h2>
+      <div class="field">通常リプレイ: <input type="number" name="vc_replay"></div>
+      <div class="field">ハズレ: <input type="number" name="vc_hazure"></div>
+    </div>
+
+    <div class="section">
+      <h2>④ バーサスゲーム中</h2>
+      <div class="field">通常リプレイ: <input type="number" name="vg_replay"></div>
+      <div class="field">ハズレ: <input type="number" name="vg_hazure"></div>
+    </div>
+
+    <div class="section">
+      <h2>⑤ REG中</h2>
+      <div class="field">一枚役: <input type="number" name="reg_1mai"></div>
+      <div class="field">ハズレ: <input type="number" name="reg_hazure"></div>
+    </div>
+
+    <div class="section">
+      <h2>⑥ REG終了画面（赤帯）</h2>
+      <div class="field">赤帯出現REG数（条件あり）: <input type="number" name="aka_total"></div>
+      <div class="field">そのうち赤帯が出た回数: <input type="number" name="aka_count"></div>
+    </div>
+
+    <div class="section">
+      <button type="submit">判別する</button>
+      <button type="reset">全データ削除</button>
+    </div>
+  </form>
+</body>
+</html>
