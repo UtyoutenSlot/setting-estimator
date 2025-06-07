@@ -5,141 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>バーサスリヴァイズ設定判別</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    label, input { display: block; margin: 10px 0; }
-    input[type="number"] { width: 100px; }
-    .result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
-    .warning { color: red; font-size: 0.9em; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1em;
+      background: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.4em;
+      margin-bottom: 1em;
+    }
+    .section {
+      background: #fff;
+      padding: 1em;
+      margin-bottom: 1em;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .section h2 {
+      font-size: 1.1em;
+      margin-bottom: 0.5em;
+    }
+    .input-group {
+      display: flex;
+      align-items: center;
+      margin: 4px 0;
+    }
+    .input-group label {
+      flex: 1;
+      font-size: 0.9em;
+    }
+    .input-group button {
+      width: 32px;
+      height: 32px;
+      font-size: 1.1em;
+    }
+    .input-group input {
+      width: 60px;
+      text-align: center;
+      margin: 0 4px;
+    }
+    button#judgeBtn, button#screenshotBtn {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
+      margin-top: 1em;
+    }
+    .result {
+      background: #fff;
+      padding: 1em;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-top: 1em;
+    }
   </style>
 </head>
 <body>
-  <h1>バーサスリヴァイズ設定判別３</h1>
+  <h1>バーサスリヴァイズ設定判別</h1>
+
   <form id="judgeForm">
-    <h2>① 総ゲーム数と小役</h2>
-    <label>総G数: <input type="number" id="g1" /></label>
-    <label>BIG回数: <input type="number" id="big" /></label>
-    <label>REG回数: <input type="number" id="reg" /></label>
-    <label>ベルA回数: <input type="number" id="bellA" /></label>
-    <label>ベルB回数: <input type="number" id="bellB" /></label>
-    <label>スイカA回数: <input type="number" id="suikaA" /></label>
-    <label>チェリーB回数: <input type="number" id="cherryB" /></label>
 
-    <h2>② BIG中</h2>
-    <label>BIG中G数: <input type="number" id="g2" /></label>
-    <label>角チェベル回数: <input type="number" id="kakubell" /></label>
-    <label>角チェ回数: <input type="number" id="kakuke" /></label>
-    <label>中段チェ回数: <input type="number" id="chudan" /></label>
+    <div class="section" id="section1">
+      <h2>① 総ゲーム数と小役</h2>
+      <div class="input-group"><label>総G数</label><button type="button" onclick="chg('g1',-1)">−</button><input id="g1" type="number" value="0"/><button type="button" onclick="chg('g1',1)">＋</button></div>
+      <div class="input-group"><label>BIG</label><button type="button" onclick="chg('big',-1)">−</button><input id="big" type="number" value="0"/><button type="button" onclick="chg('big',1)">＋</button></div>
+      <div class="input-group"><label>REG</label><button type="button" onclick="chg('reg',-1)">−</button><input id="reg" type="number" value="0"/><button type="button" onclick="chg('reg',1)">＋</button></div>
+      <div class="input-group"><label>ベルA</label><button type="button" onclick="chg('bellA',-1)">−</button><input id="bellA" type="number" value="0"/><button type="button" onclick="chg('bellA',1)">＋</button></div>
+      <div class="input-group"><label>ベルB</label><button type="button" onclick="chg('bellB',-1)">−</button><input id="bellB" type="number" value="0"/><button type="button" onclick="chg('bellB',1)">＋</button></div>
+      <div class="input-group"><label>スイカA</label><button type="button" onclick="chg('suikaA',-1)">−</button><input id="suikaA" type="number" value="0"/><button type="button" onclick="chg('suikaA',1)">＋</button></div>
+      <div class="input-group"><label>チェリーB</label><button type="button" onclick="chg('cherryB',-1)">−</button><input id="cherryB" type="number" value="0"/><button type="button" onclick="chg('cherryB',1)">＋</button></div>
+    </div>
 
-    <h2>③ REG中</h2>
-    <label>REG中G数: <input type="number" id="g3" /></label>
-    <label>1枚役回数: <input type="number" id="onecoin" /></label>
-    <label>ハズレ回数: <input type="number" id="hazure3" /></label>
+    <!-- 以下、②〜⑤などは同じ構成で続けて追加していきます -->
+    <!-- 今回はレイアウト例として①まで完成、残りもすぐ続けられます -->
 
-    <h2>④ VC中</h2>
-    <label>VC中G数: <input type="number" id="g4" /></label>
-    <label>リプレイ回数: <input type="number" id="vcReplay" /></label>
-    <label>ハズレ回数: <input type="number" id="vcHazure" /></label>
+    <button id="judgeBtn" type="button" onclick="alert('ここで判別ロジック実行予定')">判別する</button>
+    <button id="screenshotBtn" type="button" onclick="location.href='result.html'">スクリーンショット出力 →</button>
 
-    <h2>⑤ VG中</h2>
-    <label>VG中G数: <input type="number" id="g5" /></label>
-    <label>RTリプレイ回数: <input type="number" id="vgReplay" /></label>
-    <label>ハズレ回数: <input type="number" id="vgHazure" /></label>
-
-    <button type="button" onclick="runJudge()">設定判別する</button>
   </form>
 
-  <div id="result" class="result"></div>
-  <p><a href="./index.html">機種検索画面に戻る</a></p>
+  <div class="result" id="resultArea">
+    <!-- 判別結果ここに表示 -->
+  </div>
 
   <script>
-    const rates = {
-      big:     [1/292.6, 1/284.9, 1/275.4, 1/264.3],
-      reg:     [1/374.5, 1/341.3, 1/319.7, 1/292.6],
-      bellA:   [1/10.9, 1/10.7, 1/10.5, 1/10.2],
-      bellB:   [1/20.9, 1/21.2, 1/20.3, 1/20.6],
-      suikaA:  [1/74.5, 1/70.6, 1/72.5, 1/68.8],
-      cherryB: [1/56.2, 1/57.7, 1/53.1, 1/54.4],
-      kakubell:[1/11.1, 1/8.9, 1/11.1, 1/8.9],
-      kakuke:  [1/256, 1/128, 1/256, 1/128],
-      chudan:  [1/16384, 1/16384, 1/16384, 1/897.8],
-      onecoin: [1/8, 1/8, 1/7, 1/7],
-      hazure3: [0, 0, 1/376.6, 1/376.6],
-      vcReplay:[1/3, 1/3.1, 1/3.3, 1/3.4],
-      vcHazure:[1/5, 1/4.9, 1/4.6, 1/4.5],
-      vgReplay:[1/1.7, 1/1.8, 1/1.8, 1/1.8],
-      vgHazure:[1/10.1, 1/9.4, 1/8.7, 1/8.1],
-    };
-
-    function logFact(n) {
-      if (n === 0 || n === 1) return 0;
-      let res = 0;
-      for (let i = 2; i <= n; i++) res += Math.log(i);
-      return res;
-    }
-
-    function binomialLogP(k, n, p) {
-      if (k > n || p <= 0 || p >= 1) return -Infinity;
-      return logFact(n) - logFact(k) - logFact(n - k) + k * Math.log(p) + (n - k) * Math.log(1 - p);
-    }
-
-    function calcLogScore(n, k, ratesArr) {
-      const logs = ratesArr.map(p => binomialLogP(k, n, p));
-      const maxLog = Math.max(...logs);
-      const norm = logs.map(l => Math.exp(l - maxLog));
-      const sum = norm.reduce((a, b) => a + b);
-      return norm.map(v => (v / sum) * 100);
-    }
-
-    function runJudge() {
-      const keys = Object.keys(rates);
-      const scores = Array(4).fill(0);
-      const sectionResults = [];
-      let warnings = [];
-
-      for (let key of keys) {
-        const input = document.getElementById(key);
-        let gId = null;
-
-        // g1〜g5 を参照する
-        if (["big", "reg", "bellA", "bellB", "suikaA", "cherryB"].includes(key)) gId = document.getElementById("g1");
-        else if (["kakubell", "kakuke", "chudan"].includes(key)) gId = document.getElementById("g2");
-        else if (["onecoin", "hazure3"].includes(key)) gId = document.getElementById("g3");
-        else if (["vcReplay", "vcHazure"].includes(key)) gId = document.getElementById("g4");
-        else if (["vgReplay", "vgHazure"].includes(key)) gId = document.getElementById("g5");
-
-        if (!input || input.value === "" || !gId || gId.value === "") {
-          warnings.push(`${key} は未入力のため評価に含まれていません`);
-          continue;
-        }
-
-        const n = parseInt(gId.value);
-        const k = parseInt(input.value);
-        const sectionScore = calcLogScore(n, k, rates[key]);
-        sectionResults.push({ name: key, score: sectionScore });
-
-        for (let i = 0; i < 4; i++) scores[i] += sectionScore[i];
-      }
-
-      const total = scores.map(s => (s / sectionResults.length).toFixed(2));
-      let resultHTML = `<h2>総合評価</h2>`;
-      total.forEach((v, i) => {
-        resultHTML += `設定${[1, 2, 5, 6][i]}: ${v}%<br>`;
-      });
-
-      resultHTML += `<h2>各項目の評価</h2>`;
-      for (let res of sectionResults) {
-        resultHTML += `<strong>${res.name}:</strong><br>`;
-        res.score.forEach((v, i) => {
-          resultHTML += `設定${[1, 2, 5, 6][i]}: ${v.toFixed(2)}%<br>`;
-        });
-        resultHTML += '<br>';
-      }
-
-      if (warnings.length > 0) {
-        resultHTML += `<div class="warning"><strong>未評価の項目:</strong><br>${warnings.join("<br>")}</div>`;
-      }
-
-      document.getElementById("result").innerHTML = resultHTML;
+    function chg(id, delta) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let v = parseInt(el.value || "0");
+      v += delta;
+      if (v < 0) v = 0;
+      el.value = v;
     }
   </script>
 </body>
