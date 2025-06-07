@@ -7,9 +7,9 @@
 <body>
   <h2>マイジャグ5 設定判別</h2>
   <label>総ゲーム数: <input type="number" id="games" /></label><br />
-  <label>BIGの回数: <input type="number" id="big" /></label><br />
-  <label>REGの回数: <input type="number" id="reg" /></label><br />
-  <label>ぶどうの回数: <input type="number" id="budou" /></label><br />
+  <label>BIG回数: <input type="number" id="big" /></label><br />
+  <label>REG回数: <input type="number" id="reg" /></label><br />
+  <label>ぶどう回数: <input type="number" id="budou" /></label><br />
   <button onclick="judge()">判別</button>
 
   <div id="result"></div>
@@ -25,17 +25,41 @@
     };
 
     // log(n!) の近似（Lanczos近似）
-    function logFactorial(n) {
-      if (n === 0 || n === 1) return 0;
-      // Stirlingの近似式を使う
-      return n * Math.log(n) - n + 0.5 * Math.log(2 * Math.PI * n);
+    function logGamma(z) {
+    const g = 7;
+    const p = [
+      0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059,
+      12.507343278686905, -0.13857109526572012,
+      9.9843695780195716e-6, 1.5056327351493116e-7
+    ];
+
+    if (z < 0.5) {
+      return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
     }
+
+    z -= 1;
+    let x = p[0];
+    for (let i = 1; i < g + 2; i++) {
+      x += p[i] / (z + i);
+    }
+
+    const t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+
+  function logMultinomialLikelihood(k, n, p) {
+    if (n === 0 || p <= 0 || p >= 1 || k > n) return 0;
+    const q = 1 - p;
+    return logGamma(n + 1) - logGamma(k + 1) - logGamma(n - k + 1) +
+           k * Math.log(p) + (n - k) * Math.log(q);
+  }
 
     // 多項分布のlog尤度
     function logMultinomialLikelihood(k, n, p) {
       if (n === 0 || p <= 0 || p >= 1 || k > n) return 0;
       const q = 1 - p;
-      return logFactorial(n) - logFactorial(k) - logFactorial(n - k) +
+      return logGamma(n + 1) - logGamma(k + 1) - logGamma(n - k + 1) +
              k * Math.log(p) + (n - k) * Math.log(q);
     }
 
