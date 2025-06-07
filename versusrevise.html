@@ -1,126 +1,273 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>バーサスリヴァイズ設定判別</title>
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    input { margin: 5px; width: 80px; }
-    .result { margin-top: 20px; }
-  </style>
-</head>
-<body>
-  <h1>バーサスリヴァイズ設定判別２</h1>
-  <div>
-    <h3>①総ゲーム数・小役・ボーナス</h3>
-    G数: <input id="g1" type="number" value="1000" />
-    BIG: <input id="big" type="number" value="5" />
-    REG: <input id="reg" type="number" value="4" />
-    ベルA: <input id="bellA" type="number" value="100" />
-    ベルB: <input id="bellB" type="number" value="60" />
-    スイカA: <input id="suikaA" type="number" value="15" />
-    チェリーB: <input id="cherryB" type="number" value="13" />
-  </div>
-  <div>
-    <h3>②BIG中</h3>
-    G数: <input id="g2" type="number" value="0" />
-    角チェベル: <input id="kakubell" type="number" value="0" />
-    角チェリー: <input id="kaku" type="number" value="0" />
-    中段チェリー: <input id="chuudan" type="number" value="0" />
-  </div>
-  <div>
-    <h3>③REG中</h3>
-    G数: <input id="g3" type="number" value="0" />
-    1枚役: <input id="one" type="number" value="0" />
-    ハズレ: <input id="hazure" type="number" value="0" />
-  </div>
-  <div>
-    <h3>④VC中</h3>
-    G数: <input id="g4" type="number" value="0" />
-    リプ: <input id="vc_rip" type="number" value="0" />
-    ハズレ: <input id="vc_hazure" type="number" value="0" />
-  </div>
-  <div>
-    <h3>⑤VG中</h3>
-    G数: <input id="g5" type="number" value="0" />
-    リプ: <input id="vg_rip" type="number" value="0" />
-    ハズレ: <input id="vg_hazure" type="number" value="0" />
-  </div>
-  <button onclick="calculate()">判別</button>
 
-  <div class="result">
-    <h3>総合結果</h3>
-    <pre id="result"></pre>
-  </div>
-  <div class="result">
-    <h3>項目別結果</h3>
-    <pre id="details"></pre>
-  </div>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>バーサスリヴァイズ設定判別</title>
+
+  <style>
+
+    body { font-family: sans-serif; padding: 20px; }
+
+    label, input, textarea { display: block; margin: 10px 0; }
+
+    input[type="number"] { width: 100px; }
+
+    .result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+
+    .warning { color: red; font-size: 0.9em; }
+
+  </style>
+
+</head>
+
+<body>
+
+  <h1>バーサスリヴァイズ設定判別</h1>
+
+  <form id="judgeForm">
+
+    <h2>① 総ゲーム数と小役</h2>
+
+    <label>総G数: <input type="number" id="g1" /></label>
+
+    <label>BIG回数: <input type="number" id="big1" /></label>
+
+    <label>REG回数: <input type="number" id="reg1" /></label>
+
+    <label>ベルA回数: <input type="number" id="bellA" /></label>
+
+    <label>ベルB回数: <input type="number" id="bellB" /></label>
+
+    <label>スイカA回数: <input type="number" id="suikaA" /></label>
+
+    <label>チェリーB回数: <input type="number" id="cherryB" /></label>
+
+
+
+    <h2>② BIG中</h2>
+
+    <label>BIG中G数: <input type="number" id="g2" /></label>
+
+    <label>角チェベル回数: <input type="number" id="kakubell" /></label>
+
+    <label>角チェ回数: <input type="number" id="kakuke" /></label>
+
+    <label>中段チェ回数: <input type="number" id="chudan" /></label>
+
+
+
+    <h2>③ REG中</h2>
+
+    <label>REG中G数: <input type="number" id="g3" /></label>
+
+    <label>1枚役回数: <input type="number" id="onecoin" /></label>
+
+    <label>ハズレ回数: <input type="number" id="hazure3" /></label>
+
+
+
+    <h2>④ VC中</h2>
+
+    <label>VC中G数: <input type="number" id="g4" /></label>
+
+    <label>リプレイ回数: <input type="number" id="vcReplay" /></label>
+
+    <label>ハズレ回数: <input type="number" id="vcHazure" /></label>
+
+
+
+    <h2>⑤ VG中</h2>
+
+    <label>VG中G数: <input type="number" id="g5" /></label>
+
+    <label>RTリプレイ回数: <input type="number" id="vgReplay" /></label>
+
+    <label>ハズレ回数: <input type="number" id="vgHazure" /></label>
+
+
+
+    <button type="button" onclick="runJudge()">設定判別する</button>
+
+  </form>
+
+
+
+  <div id="result" class="result"></div>
+
+  <p><a href="./index.html">機種検索画面に戻る</a></p>
+
+
 
   <script>
-    function logLikelihood(x, n, p) {
-      if (n === 0) return 0;
-      if (p === 0 || p === 1) return -Infinity;
-      return x * Math.log(p) + (n - x) * Math.log(1 - p);
+
+    const rates = {
+
+      big:     [1/292.6, 1/284.9, 1/275.4, 1/264.3],
+
+      reg:     [1/374.5, 1/341.3, 1/319.7, 1/292.6],
+
+      bellA:   [1/10.9, 1/10.7, 1/10.5, 1/10.2],
+
+      bellB:   [1/20.9, 1/21.2, 1/20.3, 1/20.6],
+
+      suikaA:  [1/74.5, 1/70.6, 1/72.5, 1/68.8],
+
+      cherryB: [1/56.2, 1/57.7, 1/53.1, 1/54.4],
+
+      kakubell:[1/11.1, 1/8.9, 1/11.1, 1/8.9],
+
+      kakuke:  [1/256, 1/128, 1/256, 1/128],
+
+      chudan:  [1/16384, 1/16384, 1/16384, 1/897.8],
+
+      onecoin: [1/8, 1/8, 1/7, 1/7],
+
+      hazure3: [0, 0, 1/376.6, 1/376.6],
+
+      vcReplay:[1/3, 1/3.1, 1/3.3, 1/3.4],
+
+      vcHazure:[1/5, 1/4.9, 1/4.6, 1/4.5],
+
+      vgReplay:[1/1.7, 1/1.8, 1/1.8, 1/1.8],
+
+      vgHazure:[1/10.1, 1/9.4, 1/8.7, 1/8.1],
+
+    };
+
+
+
+    function logFact(n) {
+
+      if (n === 0 || n === 1) return 0;
+
+      let res = 0;
+
+      for (let i = 2; i <= n; i++) res += Math.log(i);
+
+      return res;
+
     }
 
-    function normalize(arr) {
-      const max = Math.max(...arr);
-      const exp = arr.map(x => Math.exp(x - max));
-      const sum = exp.reduce((a, b) => a + b, 0);
-      return exp.map(x => (x / sum) * 100);
+
+
+    function binomialLogP(k, n, p) {
+
+      if (k > n || p <= 0 || p >= 1) return -Infinity;
+
+      return logFact(n) - logFact(k) - logFact(n - k) + k * Math.log(p) + (n - k) * Math.log(1 - p);
+
     }
 
-    function calcSection(rates, data) {
-      const logLs = rates.map((rate, i) => {
-        return rate.reduce((sum, p, j) => sum + logLikelihood(data[j][0], data[j][1], p), 0);
-      });
-      return normalize(logLs);
+
+
+    function calcLogScore(n, k, ratesArr) {
+
+      const logs = ratesArr.map(p => binomialLogP(k, n, p));
+
+      const maxLog = Math.max(...logs);
+
+      const norm = logs.map(l => Math.exp(l - maxLog));
+
+      const sum = norm.reduce((a, b) => a + b);
+
+      return norm.map(v => (v / sum) * 100);
+
     }
 
-    function calculate() {
-      const g1 = +g1.value, g2 = +g2.value, g3 = +g3.value, g4 = +g4.value, g5 = +g5.value;
 
-      const allData = [
-        [+big.value, g1, [1/292.6, 1/284.9, 1/275.4, 1/264.3]],
-        [+reg.value, g1, [1/374.5, 1/341.3, 1/319.7, 1/292.6]],
-        [+bellA.value, g1, [1/10.9, 1/10.7, 1/10.5, 1/10.2]],
-        [+bellB.value, g1, [1/20.9, 1/21.2, 1/20.3, 1/20.6]],
-        [+suikaA.value, g1, [1/74.5, 1/70.6, 1/72.5, 1/68.8]],
-        [+cherryB.value, g1, [1/56.2, 1/57.7, 1/53.1, 1/54.4]],
 
-        [+kakubell.value, g2, [1/11.1, 1/8.9, 1/11.1, 1/8.9]],
-        [+kaku.value, g2, [1/256, 1/128, 1/256, 1/128]],
-        [+chuudan.value, g2, [1/16384, 1/16384, 1/16384, 1/897.8]],
+    function runJudge() {
 
-        [+one.value, g3, [1/8, 1/8, 1/7, 1/7]],
-        [+hazure.value, g3, [0, 0, 1/376.6, 1/376.6]],
+      const keys = Object.keys(rates);
 
-        [+vc_rip.value, g4, [1/3, 1/3.1, 1/3.3, 1/3.4]],
-        [+vc_hazure.value, g4, [1/5, 1/4.9, 1/4.6, 1/4.5]],
+      const scores = Array(4).fill(0);
 
-        [+vg_rip.value, g5, [1/1.7, 1/1.8, 1/1.8, 1/1.8]],
-        [+vg_hazure.value, g5, [1/10.1, 1/9.4, 1/8.7, 1/8.1]]
-      ];
+      const sectionResults = [];
 
-      let totalLogLs = [0, 0, 0, 0];
-      const detailLines = [];
+      let warnings = [];
 
-      for (let i = 0; i < allData.length; i++) {
-        const [x, n, rates] = allData[i];
-        const ls = rates.map(p => logLikelihood(x, n, p));
-        totalLogLs = totalLogLs.map((val, idx) => val + ls[idx]);
-        const norm = normalize(ls);
-        detailLines.push(`項目${i + 1}: 設定1:${norm[0].toFixed(2)}% 設定2:${norm[1].toFixed(2)}% 設定5:${norm[2].toFixed(2)}% 設定6:${norm[3].toFixed(2)}%`);
+
+
+      for (let key of keys) {
+
+        const input = document.getElementById(key);
+
+        const gId = key.match(/^g\d$/) ? null : document.getElementById("g" + key.match(/\d+/)[0]);
+
+        if (!input || input.value === "" || !gId || gId.value === "") {
+
+          warnings.push(`${key} は未入力のため評価に含まれていません`);
+
+          continue;
+
+        }
+
+        const n = parseInt(gId.value);
+
+        const k = parseInt(input.value);
+
+        const sectionScore = calcLogScore(n, k, rates[key]);
+
+        sectionResults.push({ name: key, score: sectionScore });
+
+        for (let i = 0; i < 4; i++) scores[i] += sectionScore[i];
+
       }
 
-      const total = normalize(totalLogLs);
-      result.textContent = `設定1: ${total[0].toFixed(2)}%\n設定2: ${total[1].toFixed(2)}%\n設定5: ${total[2].toFixed(2)}%\n設定6: ${total[3].toFixed(2)}%`;
-      details.textContent = detailLines.join("\n");
+
+
+      const total = scores.map(s => (s / sectionResults.length).toFixed(2));
+
+      let resultHTML = `<h2>総合評価</h2>`;
+
+      total.forEach((v, i) => {
+
+        resultHTML += `設定${[1,2,5,6][i]}: ${v}%<br>`;
+
+      });
+
+
+
+      resultHTML += `<h2>各項目の評価</h2>`;
+
+      for (let res of sectionResults) {
+
+        resultHTML += `<strong>${res.name}:</strong><br>`;
+
+        res.score.forEach((v, i) => {
+
+          resultHTML += `設定${[1,2,5,6][i]}: ${v.toFixed(2)}%<br>`;
+
+        });
+
+        resultHTML += '<br>';
+
+      }
+
+
+
+      if (warnings.length > 0) {
+
+        resultHTML += `<div class="warning"><strong>未評価の項目:</strong><br>${warnings.join("<br>")}</div>`;
+
+      }
+
+
+
+      document.getElementById("result").innerHTML = resultHTML;
+
     }
+
   </script>
+
 </body>
+
 </html>
 
 
