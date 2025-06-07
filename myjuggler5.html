@@ -1,72 +1,77 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>マイジャグ5 判別</title>
+  <title>マイジャグ5 設定判別</title>
 </head>
 <body>
-  <h2>マイジャグラーV 設定判別</h2>
-
-  <label>総ゲーム数: <input type="number" id="games"></label><br><br>
-  <label>BIG回数: <input type="number" id="big"></label><br><br>
-  <label>REG回数: <input type="number" id="reg"></label><br><br>
-  <label>ぶどう回数: <input type="number" id="budou"></label><br><br>
-
-  <button onclick="judge()">判別する</button>
+  <h2>マイジャグ5 設定判別</h2>
+  <label>総ゲーム数: <input type="number" id="games" /></label><br />
+  <label>BIG回数: <input type="number" id="big" /></label><br />
+  <label>REG回数: <input type="number" id="reg" /></label><br />
+  <label>ぶどう回数: <input type="number" id="budou" /></label><br />
+  <button onclick="judge()">判別</button>
 
   <div id="result"></div>
 
   <script>
     const settings = [1, 2, 3, 4, 5, 6];
 
-    // 仮の出現率（あとで修正OK）
+    // 各設定の確率（適当なので必要に応じて修正してね）
     const rates = {
       big: [1/273.1, 1/270.8, 1/266.4, 1/254.0, 1/240.1, 1/229.1],
       reg: [1/409.6, 1/385.5, 1/336.1, 1/290.0, 1/268.6, 1/229.1],
       budou: [1/5.88, 1/5.84, 1/5.80, 1/5.75, 1/5.75, 1/5.65]
     };
 
-    function logLikelihood(k, n, p) {
-      if (n === 0 || isNaN(k) || isNaN(n)) return 0;
-      if (p <= 0 || p >= 1) return -Infinity;
-      return k * Math.log(p) + (n - k) * Math.log(1 - p);
+    // log(n!) の近似（Lanczos近似）
+    function logFactorial(n) {
+      if (n === 0 || n === 1) return 0;
+      // Stirlingの近似式を使う
+      return n * Math.log(n) - n + 0.5 * Math.log(2 * Math.PI * n);
+    }
+
+    // 多項分布のlog尤度
+    function logMultinomialLikelihood(k, n, p) {
+      if (n === 0 || p <= 0 || p >= 1 || k > n) return 0;
+      const q = 1 - p;
+      return logFactorial(n) - logFactorial(k) - logFactorial(n - k) +
+             k * Math.log(p) + (n - k) * Math.log(q);
     }
 
     function judge() {
-      const resultDiv = document.getElementById('result');
-      const games = parseInt(document.getElementById('games').value);
-      const big = parseInt(document.getElementById('big').value);
-      const reg = parseInt(document.getElementById('reg').value);
-      const budou = parseInt(document.getElementById('budou').value);
+      const n = parseInt(document.getElementById("games").value);
+      const resultDiv = document.getElementById("result");
 
-      let logLs = settings.map(_ => 0);
+      const inputData = {
+        big: parseInt(document.getElementById("big").value),
+        reg: parseInt(document.getElementById("reg").value),
+        budou: parseInt(document.getElementById("budou").value)
+      };
 
-      if (!isNaN(big)) {
-        settings.forEach((_, i) => {
-          logLs[i] += logLikelihood(big, games, rates.big[i]);
-        });
-      }
+      // 各設定ごとのlog尤度
+      let logLs = settings.map((_, i) => {
+        let total = 0;
+        for (const key in inputData) {
+          const k = inputData[key];
+          const p = rates[key][i];
+          if (!isNaN(k)) {
+            total += logMultinomialLikelihood(k, n, p);
+          }
+        }
+        return total;
+      });
 
-      if (!isNaN(reg)) {
-        settings.forEach((_, i) => {
-          logLs[i] += logLikelihood(reg, games, rates.reg[i]);
-        });
-      }
-
-      if (!isNaN(budou)) {
-        settings.forEach((_, i) => {
-          logLs[i] += logLikelihood(budou, games, rates.budou[i]);
-        });
-      }
-
+      // 尤度の指数を計算し、最大値基準で正規化
       const maxLog = Math.max(...logLs);
       const probs = logLs.map(l => Math.exp(l - maxLog));
       const sumProb = probs.reduce((a, b) => a + b, 0);
       const percents = probs.map(p => (p / sumProb * 100).toFixed(2));
 
-      resultDiv.innerHTML = '<h3>判別結果</h3><ul>' + settings.map((s, i) =>
-        `<li>設定${s}: ${percents[i]}%</li>`
-      ).join('') + '</ul>';
+      // 表示
+      resultDiv.innerHTML = "<h3>判別結果</h3><ul>" +
+        settings.map((s, i) => `<li>設定${s}: ${percents[i]}%</li>`).join("") +
+        "</ul>";
     }
   </script>
 </body>
