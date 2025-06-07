@@ -1,74 +1,61 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>マイジャグ5 設定判別</title>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    label { display: block; margin-top: 1rem; }
-    input { margin-left: 1rem; width: 80px; }
-    button { margin-top: 2rem; padding: 0.5rem 1rem; }
-  </style>
+  <title>マイジャグ5 二項分布 判別</title>
 </head>
 <body>
-  <h2>マイジャグ5 設定判別（BIG/REG/ぶどう）</h2>
-
-  <label>総ゲーム数(G) <input type="number" id="games"></label>
-  <label>BIGの回数 <input type="number" id="big"></label>
-  <label>REG回数 <input type="number" id="reg"></label>
-  <label>ぶどう回数 <input type="number" id="budou"></label>
-
+  <h2>マイジャグ5 設定判別（二項分布）</h2>
+  <label>総ゲーム数：<input type="number" id="games" value="1000"></label><br>
+  <label>BIG回数：<input type="number" id="big" value="5"></label><br>
+  <label>REG回数：<input type="number" id="reg" value="4"></label><br>
+  <label>ぶどう回数：<input type="number" id="budou" value="180"></label><br>
   <button onclick="judge()">判別する</button>
 
   <div id="result"></div>
 
   <script>
     const settings = [1, 2, 3, 4, 5, 6];
-
     const rates = {
       big: [1/273.1, 1/270.8, 1/266.4, 1/254.0, 1/240.1, 1/229.1],
       reg: [1/409.6, 1/385.5, 1/336.1, 1/290.0, 1/268.6, 1/229.1],
-      budou: [1/5.88, 1/5.84, 1/5.80, 1/5.75, 1/5.75, 1/5.65],
+      budou: [1/5.88, 1/5.84, 1/5.80, 1/5.75, 1/5.75, 1/5.65]
     };
 
-    function logLikelihood(k, n, p) {
-      if (n === 0 || isNaN(k) || isNaN(n)) return 0;
-      if (p <= 0 || p >= 1) return -Infinity;
-      return k * Math.log(p) + (n - k) * Math.log(1 - p);
+    function factorial(n) {
+      if (n === 0 || n === 1) return 1;
+      let res = 1;
+      for (let i = 2; i <= n; i++) res *= i;
+      return res;
+    }
+
+    function binomialPMF(k, n, p) {
+      if (n === 0 || isNaN(k) || isNaN(n)) return 1;
+      if (p === 0 || p === 1) return 0;
+      const comb = factorial(n) / (factorial(k) * factorial(n - k));
+      return comb * Math.pow(p, k) * Math.pow(1 - p, n - k);
     }
 
     function judge() {
-      const G = parseInt(document.getElementById('games').value);
-      const big = parseInt(document.getElementById('big').value);
-      const reg = parseInt(document.getElementById('reg').value);
-      const budou = parseInt(document.getElementById('budou').value);
+      const resultDiv = document.getElementById('result');
+      const g = parseInt(document.getElementById('games').value);
+      const b = parseInt(document.getElementById('big').value);
+      const r = parseInt(document.getElementById('reg').value);
+      const bd = parseInt(document.getElementById('budou').value);
 
-      const inputData = { big, reg, budou };
-      const counts = { big: big || 0, reg: reg || 0, budou: budou || 0 };
-      const totals = { big: G, reg: G, budou: G };
-
-      let logLs = settings.map((_, i) => {
-        let logL = 0;
-        for (let key in inputData) {
-          if (!isNaN(inputData[key])) {
-            logL += logLikelihood(counts[key], totals[key], rates[key][i]);
-          }
-        }
-        return logL;
+      const probs = settings.map((_, i) => {
+        const pb = binomialPMF(b, g, rates.big[i]);
+        const pr = binomialPMF(r, g, rates.reg[i]);
+        const pbd = binomialPMF(bd, g, rates.budou[i]);
+        return pb * pr * pbd;
       });
 
-      // 正規化：最大値を0として相対尤度へ（指数補正）
-      const maxLog = Math.max(...logLs);
-      const relLikelihoods = logLs.map(l => Math.exp(l - maxLog));
-      const sum = relLikelihoods.reduce((a, b) => a + b, 0);
-      const percents = relLikelihoods.map(p => ((p / sum) * 100).toFixed(2));
+      const total = probs.reduce((a, b) => a + b, 0);
+      const percents = probs.map(p => (p / total * 100).toFixed(2));
 
-      // 表示
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = '<h3>判別結果</h3><ul>' +
-        settings.map((s, i) =>
-          `<li>設定${s}: ${percents[i]}%</li>`
-        ).join('') + '</ul>';
+      resultDiv.innerHTML = '<h3>判別結果（二項分布）</h3><ul>' + settings.map((s, i) =>
+        `<li>設定${s}: ${percents[i]}%</li>`
+      ).join('') + '</ul>';
     }
   </script>
 </body>
