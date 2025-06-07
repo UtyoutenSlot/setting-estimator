@@ -2,92 +2,102 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>バーサスリヴァイズ設定判別</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input { width: 60px; margin: 3px; }
-    .section { margin-bottom: 20px; }
-    button { margin-top: 10px; }
+    body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; padding: 1rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+    label { display: block; margin-top: 1rem; }
+    input[type="number"] { width: 100px; margin-right: 10px; }
+    button { margin-top: 1rem; }
+    .result { margin-top: 2rem; font-weight: bold; }
   </style>
 </head>
 <body>
   <h1>バーサスリヴァイズ設定判別</h1>
+  <form id="judgeForm">
+    <label>① 総ゲーム数: <input type="number" id="games" /></label>
+    <label>BIG回数: <input type="number" id="big" /></label>
+    <label>REG回数: <input type="number" id="reg" /></label>
+    <label>ベルA: <input type="number" id="bellA" /></label>
+    <label>ベルB: <input type="number" id="bellB" /></label>
+    <label>スイカA: <input type="number" id="suikaA" /></label>
+    <label>チェリーB: <input type="number" id="cherryB" /></label>
 
-  <div class="section">
-    <h3>① 総ゲーム数関連</h3>
-    総ゲーム数: <input id="totalGames" type="number" placeholder="例: 5000"><br>
-    BIG: <input id="big" type="number">
-    REG: <input id="reg" type="number">
-    ベルA: <input id="bellA" type="number">
-    ベルB: <input id="bellB" type="number">
-    スイカA: <input id="suikaA" type="number">
-    チェリーB: <input id="cherryB" type="number">
-  </div>
+    <label>BIG中：角チェ+ベル: <input type="number" id="cb_bell" /> / <input type="number" id="cb_bell_total" placeholder="母集団" /></label>
+    <label>BIG中：角チェ: <input type="number" id="cb" /> / <input type="number" id="cb_total" placeholder="母集団" /></label>
+    <label>BIG中：中段チェリー: <input type="number" id="middle" /> / <input type="number" id="middle_total" placeholder="母集団" /></label>
 
-  <button onclick="analyze()">判別する</button>
-  <button onclick="resetAll()">全データ削除</button>
+    <label>REG中：一枚役: <input type="number" id="reg1" /> / <input type="number" id="reg_total" placeholder="母集団" /></label>
+    <label>REG中：ハズレ: <input type="number" id="reg_hz" /> / <input type="number" id="reg_total2" placeholder="母集団" /></label>
 
-  <div id="result" class="section"></div>
-  <div class="section">
-    <a href="index.html">機種検索画面に戻る</a>
-  </div>
+    <label>チャレンジ中：通常リプ: <input type="number" id="vsc_rip" /> / <input type="number" id="vsc_total" placeholder="母集団" /></label>
+    <label>チャレンジ中：ハズレ: <input type="number" id="vsc_hz" /> / <input type="number" id="vsc_total2" placeholder="母集団" /></label>
 
-<script>
-function analyze() {
-  const total = parseFloat(document.getElementById('totalGames').value);
-  const big = parseFloat(document.getElementById('big').value) || 0;
-  const reg = parseFloat(document.getElementById('reg').value) || 0;
-  const bellA = parseFloat(document.getElementById('bellA').value) || 0;
-  const bellB = parseFloat(document.getElementById('bellB').value) || 0;
-  const suikaA = parseFloat(document.getElementById('suikaA').value) || 0;
-  const cherryB = parseFloat(document.getElementById('cherryB').value) || 0;
+    <label>ゲーム中：RTリプ: <input type="number" id="vsg_rip" /> / <input type="number" id="vsg_total" placeholder="母集団" /></label>
+    <label>ゲーム中：ハズレ: <input type="number" id="vsg_hz" /> / <input type="number" id="vsg_total2" placeholder="母集団" /></label>
 
-  const totalCount = big + reg + bellA + bellB + suikaA + cherryB;
-  if (!total || totalCount === 0) {
-    document.getElementById('result').innerText = 'データが不十分です';
-    return;
-  }
+    <button type="button" onclick="judge()">判別する</button>
+  </form>
+  <div class="result" id="result"></div>
 
-  const settings = {
-    1: { big: 1/292.6, reg: 1/374.5, bellA: 1/10.9, bellB: 1/20.9, suikaA: 1/74.5, cherryB: 1/56.2 },
-    2: { big: 1/284.9, reg: 1/341.3, bellA: 1/10.7, bellB: 1/21.2, suikaA: 1/70.6, cherryB: 1/57.7 },
-    5: { big: 1/275.4, reg: 1/319.7, bellA: 1/10.5, bellB: 1/20.3, suikaA: 1/72.5, cherryB: 1/53.1 },
-    6: { big: 1/264.3, reg: 1/292.6, bellA: 1/10.2, bellB: 1/20.6, suikaA: 1/68.8, cherryB: 1/54.4 }
-  };
+  <script>
+    const settings = [1, 2, 5, 6];
+    const rates = {
+      big: [1/292.6, 1/284.9, 1/275.4, 1/264.3],
+      reg: [1/374.5, 1/341.3, 1/319.7, 1/292.6],
+      bellA: [1/10.9, 1/10.7, 1/10.5, 1/10.2],
+      bellB: [1/20.9, 1/21.2, 1/20.3, 1/20.6],
+      suikaA: [1/74.5, 1/70.6, 1/72.5, 1/68.8],
+      cherryB: [1/56.2, 1/57.7, 1/53.1, 1/54.4],
+      cb_bell: [1/256, 1/128, 1/256, 1/128],
+      cb: [1/256, 1/128, 1/256, 1/128],
+      middle: [1/16384, 1/16384, 1/16384, 1/897.8],
+      reg1: [1/8, 1/8, 1/7, 1/7],
+      reg_hz: [0, 0, 1/376.6, 1/376.6],
+      vsc_rip: [1/3, 1/3.1, 1/3.3, 1/3.4],
+      vsc_hz: [1/5, 1/4.9, 1/4.6, 1/4.5],
+      vsg_rip: [1/1.7, 1/1.8, 1/1.8, 1/1.8],
+      vsg_hz: [1/10.1, 1/9.4, 1/8.7, 1/8.1]
+    };
 
-  const likelihoods = {};
-  for (let s in settings) {
-    const p = settings[s];
-    const probs = [p.big, p.reg, p.bellA, p.bellB, p.suikaA, p.cherryB];
-    const obs = [big, reg, bellA, bellB, suikaA, cherryB];
-    let likelihood = factorial(totalCount);
-    for (let i = 0; i < obs.length; i++) {
-      likelihood *= Math.pow(probs[i], obs[i]) / factorial(obs[i]);
+    function logLikelihood(k, n, p) {
+      if (n === 0 || isNaN(k) || isNaN(n)) return 0;
+      if (p === 0 || p === 1) return -Infinity;
+      return k * Math.log(p) + (n - k) * Math.log(1 - p);
     }
-    likelihoods[s] = likelihood;
-  }
 
-  const sorted = Object.entries(likelihoods).sort((a, b) => b[1] - a[1]);
-  let result = '<h3>判別結果（総ゲーム数ベース）</h3><ol>';
-  for (const [s, l] of sorted) {
-    result += `<li>設定${s}：${l.toExponential(2)}</li>`;
-  }
-  result += '</ol>';
-  document.getElementById('result').innerHTML = result;
-}
+    function judge() {
+      const resultDiv = document.getElementById('result');
+      const inputs = [
+        ['big', 'games'], ['reg', 'games'], ['bellA', 'games'], ['bellB', 'games'],
+        ['suikaA', 'games'], ['cherryB', 'games'],
+        ['cb_bell', 'cb_bell_total'], ['cb', 'cb_total'], ['middle', 'middle_total'],
+        ['reg1', 'reg_total'], ['reg_hz', 'reg_total2'],
+        ['vsc_rip', 'vsc_total'], ['vsc_hz', 'vsc_total2'],
+        ['vsg_rip', 'vsg_total'], ['vsg_hz', 'vsg_total2']
+      ];
 
-function resetAll() {
-  document.querySelectorAll('input').forEach(i => i.value = '');
-  document.getElementById('result').innerHTML = '';
-}
+      let logLs = settings.map(_ => 0);
 
-function factorial(n) {
-  if (n === 0 || n === 1) return 1;
-  let res = 1;
-  for (let i = 2; i <= n; i++) res *= i;
-  return res;
-}
-</script>
+      inputs.forEach(([key, totalId]) => {
+        const val = parseInt(document.getElementById(key)?.value);
+        const total = parseInt(document.getElementById(totalId)?.value);
+        if (!isNaN(val) && !isNaN(total)) {
+          settings.forEach((s, i) => {
+            logLs[i] += logLikelihood(val, total, rates[key][i]);
+          });
+        }
+      });
+
+      const maxLog = Math.max(...logLs);
+      const probs = logLs.map(l => Math.exp(l - maxLog));
+      const sumProb = probs.reduce((a, b) => a + b, 0);
+      const percents = probs.map(p => (p / sumProb * 100).toFixed(2));
+
+      resultDiv.innerHTML = '<h3>判別結果</h3><ul>' + settings.map((s, i) =>
+        `<li>設定${s}: ${percents[i]}%</li>`
+      ).join('') + '</ul>';
+    }
+  </script>
 </body>
 </html>
