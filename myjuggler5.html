@@ -2,42 +2,71 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>マイジャグラーV 設定判別</title>
+  <title>マイジャグ5 判別</title>
 </head>
 <body>
-  <h1>マイジャグラーV 設定判別ツール</h1>
+  <h2>マイジャグラーV 設定判別</h2>
 
-  <h2>入力</h2>
-  <form id="inputForm">
-    <label>BIG回数: <input type="number" id="big"></label><br>
-    <label>REG回数: <input type="number" id="reg"></label><br>
-    <label>総ゲーム数: <input type="number" id="games"></label><br>
-    <button type="button" onclick="judge()">判別</button>
-  </form>
+  <label>総ゲーム数: <input type="number" id="games"></label><br><br>
+  <label>BIG回数: <input type="number" id="big"></label><br><br>
+  <label>REG回数: <input type="number" id="reg"></label><br><br>
+  <label>ぶどう回数: <input type="number" id="budou"></label><br><br>
 
-  <h2>結果</h2>
-  <div id="result">ここに結果が表示されます</div>
+  <button onclick="judge()">判別する</button>
+
+  <div id="result"></div>
 
   <script>
+    const settings = [1, 2, 3, 4, 5, 6];
+
+    // 仮の出現率（あとで修正OK）
+    const rates = {
+      big: [1/273.1, 1/270.8, 1/266.4, 1/254.0, 1/240.1, 1/229.1],
+      reg: [1/409.6, 1/385.5, 1/336.1, 1/290.0, 1/268.6, 1/229.1],
+      budou: [1/5.88, 1/5.84, 1/5.80, 1/5.75, 1/5.75, 1/5.65]
+    };
+
+    function logLikelihood(k, n, p) {
+      if (n === 0 || isNaN(k) || isNaN(n)) return 0;
+      if (p <= 0 || p >= 1) return -Infinity;
+      return k * Math.log(p) + (n - k) * Math.log(1 - p);
+    }
+
     function judge() {
-      const big = parseInt(document.getElementById("big").value);
-      const reg = parseInt(document.getElementById("reg").value);
-      const games = parseInt(document.getElementById("games").value);
+      const resultDiv = document.getElementById('result');
+      const games = parseInt(document.getElementById('games').value);
+      const big = parseInt(document.getElementById('big').value);
+      const reg = parseInt(document.getElementById('reg').value);
+      const budou = parseInt(document.getElementById('budou').value);
 
-      const bigProb = big / games;
-      const regProb = reg / games;
+      let logLs = settings.map(_ => 0);
 
-      let message = "BIG確率: " + bigProb.toFixed(4) + "<br>" +
-                    "REG確率: " + regProb.toFixed(4) + "<br>";
-
-      // 設定判別（ざっくり）
-      if (regProb >= 1/270) {
-        message += "設定4以上の可能性あり";
-      } else {
-        message += "設定1〜3の可能性が高い";
+      if (!isNaN(big)) {
+        settings.forEach((_, i) => {
+          logLs[i] += logLikelihood(big, games, rates.big[i]);
+        });
       }
 
-      document.getElementById("result").innerHTML = message;
+      if (!isNaN(reg)) {
+        settings.forEach((_, i) => {
+          logLs[i] += logLikelihood(reg, games, rates.reg[i]);
+        });
+      }
+
+      if (!isNaN(budou)) {
+        settings.forEach((_, i) => {
+          logLs[i] += logLikelihood(budou, games, rates.budou[i]);
+        });
+      }
+
+      const maxLog = Math.max(...logLs);
+      const probs = logLs.map(l => Math.exp(l - maxLog));
+      const sumProb = probs.reduce((a, b) => a + b, 0);
+      const percents = probs.map(p => (p / sumProb * 100).toFixed(2));
+
+      resultDiv.innerHTML = '<h3>判別結果</h3><ul>' + settings.map((s, i) =>
+        `<li>設定${s}: ${percents[i]}%</li>`
+      ).join('') + '</ul>';
     }
   </script>
 </body>
