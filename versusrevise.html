@@ -3,91 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>バーサスリヴァイズ 設定判別</title>
+  <title>バーサスリヴァイズ設定判別</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
-    h2 {
-      margin-top: 2em;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input[type="number"] {
-      width: 100px;
-    }
-    .section {
-      margin-bottom: 30px;
-      padding: 15px;
-      border: 1px solid #ccc;
-    }
-    .note {
-      color: red;
-      margin-bottom: 10px;
-    }
+    body { font-family: sans-serif; padding: 20px; }
+    input { width: 60px; margin: 3px; }
+    .section { margin-bottom: 20px; }
+    button { margin-top: 10px; }
   </style>
 </head>
 <body>
   <h1>バーサスリヴァイズ設定判別</h1>
-  <p class="note">※カウントしていないものは空欄のままにしてください（0は「0回引いた」とみなします）</p>
 
   <div class="section">
-    <h2>① 総ゲーム数</h2>
-    <label>総ゲーム数: <input type="number" id="totalGames"></label>
-    <label>BIG回数: <input type="number" id="bigCount"></label>
-    <label>REG回数: <input type="number" id="regCount"></label>
-    <label>ベルA: <input type="number" id="bellA"></label>
-    <label>ベルB: <input type="number" id="bellB"></label>
-    <label>スイカA: <input type="number" id="suikaA"></label>
-    <label>チェリーB: <input type="number" id="cherryB"></label>
+    <h3>① 総ゲーム数関連</h3>
+    総ゲーム数: <input id="totalGames" type="number" placeholder="例: 5000"><br>
+    BIG: <input id="big" type="number">
+    REG: <input id="reg" type="number">
+    ベルA: <input id="bellA" type="number">
+    ベルB: <input id="bellB" type="number">
+    スイカA: <input id="suikaA" type="number">
+    チェリーB: <input id="cherryB" type="number">
   </div>
 
+  <button onclick="analyze()">判別する</button>
+  <button onclick="resetAll()">全データ削除</button>
+
+  <div id="result" class="section"></div>
   <div class="section">
-    <h2>② BIG中</h2>
-    <label>BIG中ゲーム数: <input type="number" id="bigGames"></label>
-    <label>角チェリー+ベル: <input type="number" id="bigKakuBell"></label>
-    <label>角チェリー: <input type="number" id="bigKaku"></label>
-    <label>中段チェリー: <input type="number" id="bigChudan"></label>
+    <a href="index.html">機種検索画面に戻る</a>
   </div>
 
-  <div class="section">
-    <h2>③ VSチャレンジ中</h2>
-    <label>チャレンジ中ゲーム数: <input type="number" id="vschallengeGames"></label>
-    <label>通常リプレイ: <input type="number" id="vschallengeReplay"></label>
-    <label>ハズレ: <input type="number" id="vschallengeHazure"></label>
-  </div>
+<script>
+function analyze() {
+  const total = parseFloat(document.getElementById('totalGames').value);
+  const big = parseFloat(document.getElementById('big').value) || 0;
+  const reg = parseFloat(document.getElementById('reg').value) || 0;
+  const bellA = parseFloat(document.getElementById('bellA').value) || 0;
+  const bellB = parseFloat(document.getElementById('bellB').value) || 0;
+  const suikaA = parseFloat(document.getElementById('suikaA').value) || 0;
+  const cherryB = parseFloat(document.getElementById('cherryB').value) || 0;
 
-  <div class="section">
-    <h2>④ VSゲーム中</h2>
-    <label>VSゲーム中ゲーム数: <input type="number" id="vsgameGames"></label>
-    <label>通常リプレイ: <input type="number" id="vsgameReplay"></label>
-    <label>ハズレ: <input type="number" id="vsgameHazure"></label>
-  </div>
+  const totalCount = big + reg + bellA + bellB + suikaA + cherryB;
+  if (!total || totalCount === 0) {
+    document.getElementById('result').innerText = 'データが不十分です';
+    return;
+  }
 
-  <div class="section">
-    <h2>⑤ REG中</h2>
-    <label>REG中ゲーム数: <input type="number" id="regGames"></label>
-    <label>一枚役: <input type="number" id="regOne"></label>
-    <label>ハズレ: <input type="number" id="regHazure"></label>
-  </div>
+  const settings = {
+    1: { big: 1/292.6, reg: 1/374.5, bellA: 1/10.9, bellB: 1/20.9, suikaA: 1/74.5, cherryB: 1/56.2 },
+    2: { big: 1/284.9, reg: 1/341.3, bellA: 1/10.7, bellB: 1/21.2, suikaA: 1/70.6, cherryB: 1/57.7 },
+    5: { big: 1/275.4, reg: 1/319.7, bellA: 1/10.5, bellB: 1/20.3, suikaA: 1/72.5, cherryB: 1/53.1 },
+    6: { big: 1/264.3, reg: 1/292.6, bellA: 1/10.2, bellB: 1/20.6, suikaA: 1/68.8, cherryB: 1/54.4 }
+  };
 
-  <div style="margin-top: 30px;">
-    <button onclick="judgeSetting()">判別する</button>
-    <button onclick="resetForm()">全データ削除</button>
-  </div>
-
-  <script>
-    function resetForm() {
-      const inputs = document.querySelectorAll('input[type="number"]');
-      inputs.forEach(input => input.value = '');
+  const likelihoods = {};
+  for (let s in settings) {
+    const p = settings[s];
+    const probs = [p.big, p.reg, p.bellA, p.bellB, p.suikaA, p.cherryB];
+    const obs = [big, reg, bellA, bellB, suikaA, cherryB];
+    let likelihood = factorial(totalCount);
+    for (let i = 0; i < obs.length; i++) {
+      likelihood *= Math.pow(probs[i], obs[i]) / factorial(obs[i]);
     }
+    likelihoods[s] = likelihood;
+  }
 
-    function judgeSetting() {
-      alert("ここに多項分布による判別ロジックを追加予定です。");
-    }
-  </script>
+  const sorted = Object.entries(likelihoods).sort((a, b) => b[1] - a[1]);
+  let result = '<h3>判別結果（総ゲーム数ベース）</h3><ol>';
+  for (const [s, l] of sorted) {
+    result += `<li>設定${s}：${l.toExponential(2)}</li>`;
+  }
+  result += '</ol>';
+  document.getElementById('result').innerHTML = result;
+}
+
+function resetAll() {
+  document.querySelectorAll('input').forEach(i => i.value = '');
+  document.getElementById('result').innerHTML = '';
+}
+
+function factorial(n) {
+  if (n === 0 || n === 1) return 1;
+  let res = 1;
+  for (let i = 2; i <= n; i++) res *= i;
+  return res;
+}
+</script>
 </body>
 </html>
