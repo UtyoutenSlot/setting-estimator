@@ -1,101 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <title>マイジャグ5 設定判別</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    label { display: block; margin-top: 1rem; }
+    input { margin-left: 1rem; width: 80px; }
+    button { margin-top: 2rem; padding: 0.5rem 1rem; }
+  </style>
 </head>
 <body>
-  <h2>マイジャグ5 設定判別</h2>
-  <label>総ゲーム数: <input type="number" id="games" /></label><br />
-  <label>BIG回数: <input type="number" id="big" /></label><br />
-  <label>REG回数: <input type="number" id="reg" /></label><br />
-  <label>ぶどう回数: <input type="number" id="budou" /></label><br />
-  <button onclick="judge()">判別</button>
+  <h2>マイジャグ5 設定判別（BIG/REG/ぶどう）</h2>
+
+  <label>総ゲーム数(G) <input type="number" id="games"></label>
+  <label>BIGの回数 <input type="number" id="big"></label>
+  <label>REG回数 <input type="number" id="reg"></label>
+  <label>ぶどう回数 <input type="number" id="budou"></label>
+
+  <button onclick="judge()">判別する</button>
 
   <div id="result"></div>
 
   <script>
     const settings = [1, 2, 3, 4, 5, 6];
 
-    // 各設定の確率（適当なので必要に応じて修正してね）
     const rates = {
       big: [1/273.1, 1/270.8, 1/266.4, 1/254.0, 1/240.1, 1/229.1],
       reg: [1/409.6, 1/385.5, 1/336.1, 1/290.0, 1/268.6, 1/229.1],
-      budou: [1/5.88, 1/5.84, 1/5.80, 1/5.75, 1/5.75, 1/5.65]
+      budou: [1/5.88, 1/5.84, 1/5.80, 1/5.75, 1/5.75, 1/5.65],
     };
 
-    // log(n!) の近似（Lanczos近似）
-    function logGamma(z) {
-    const g = 7;
-    const p = [
-      0.99999999999980993, 676.5203681218851, -1259.1392167224028,
-      771.32342877765313, -176.61502916214059,
-      12.507343278686905, -0.13857109526572012,
-      9.9843695780195716e-6, 1.5056327351493116e-7
-    ];
-
-    if (z < 0.5) {
-      return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
-    }
-
-    z -= 1;
-    let x = p[0];
-    for (let i = 1; i < g + 2; i++) {
-      x += p[i] / (z + i);
-    }
-
-    const t = z + g + 0.5;
-    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
-  }
-
-  function logMultinomialLikelihood(k, n, p) {
-    if (n === 0 || p <= 0 || p >= 1 || k > n) return 0;
-    const q = 1 - p;
-    return logGamma(n + 1) - logGamma(k + 1) - logGamma(n - k + 1) +
-           k * Math.log(p) + (n - k) * Math.log(q);
-  }
-
-    // 多項分布のlog尤度
-    function logMultinomialLikelihood(k, n, p) {
-      if (n === 0 || p <= 0 || p >= 1 || k > n) return 0;
-      const q = 1 - p;
-      return logGamma(n + 1) - logGamma(k + 1) - logGamma(n - k + 1) +
-             k * Math.log(p) + (n - k) * Math.log(q);
+    function logLikelihood(k, n, p) {
+      if (n === 0 || isNaN(k) || isNaN(n)) return 0;
+      if (p <= 0 || p >= 1) return -Infinity;
+      return k * Math.log(p) + (n - k) * Math.log(1 - p);
     }
 
     function judge() {
-      const n = parseInt(document.getElementById("games").value);
-      const resultDiv = document.getElementById("result");
+      const G = parseInt(document.getElementById('games').value);
+      const big = parseInt(document.getElementById('big').value);
+      const reg = parseInt(document.getElementById('reg').value);
+      const budou = parseInt(document.getElementById('budou').value);
 
-      const inputData = {
-        big: parseInt(document.getElementById("big").value),
-        reg: parseInt(document.getElementById("reg").value),
-        budou: parseInt(document.getElementById("budou").value)
-      };
+      const inputData = { big, reg, budou };
+      const counts = { big: big || 0, reg: reg || 0, budou: budou || 0 };
+      const totals = { big: G, reg: G, budou: G };
 
-      // 各設定ごとのlog尤度
       let logLs = settings.map((_, i) => {
-        let total = 0;
-        for (const key in inputData) {
-          const k = inputData[key];
-          const p = rates[key][i];
-          if (!isNaN(k)) {
-            total += logMultinomialLikelihood(k, n, p);
+        let logL = 0;
+        for (let key in inputData) {
+          if (!isNaN(inputData[key])) {
+            logL += logLikelihood(counts[key], totals[key], rates[key][i]);
           }
         }
-        return total;
+        return logL;
       });
 
-      // 尤度の指数を計算し、最大値基準で正規化
+      // 正規化：最大値を0として相対尤度へ（指数補正）
       const maxLog = Math.max(...logLs);
-      const probs = logLs.map(l => Math.exp(l - maxLog));
-      const sumProb = probs.reduce((a, b) => a + b, 0);
-      const percents = probs.map(p => (p / sumProb * 100).toFixed(2));
+      const relLikelihoods = logLs.map(l => Math.exp(l - maxLog));
+      const sum = relLikelihoods.reduce((a, b) => a + b, 0);
+      const percents = relLikelihoods.map(p => ((p / sum) * 100).toFixed(2));
 
       // 表示
-      resultDiv.innerHTML = "<h3>判別結果</h3><ul>" +
-        settings.map((s, i) => `<li>設定${s}: ${percents[i]}%</li>`).join("") +
-        "</ul>";
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<h3>判別結果</h3><ul>' +
+        settings.map((s, i) =>
+          `<li>設定${s}: ${percents[i]}%</li>`
+        ).join('') + '</ul>';
     }
   </script>
 </body>
