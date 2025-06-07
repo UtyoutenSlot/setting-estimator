@@ -1,59 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>マイジャグ5 二項分布 判別</title>
+  <title>マイジャグ5 設定判別（二項分布）</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    label { display: block; margin-top: 10px; }
+    input { width: 100px; margin-left: 10px; }
+    button { margin-top: 20px; }
+  </style>
 </head>
 <body>
-  <h2>マイジャグ5 設定判別（二項分布）</h2>
-  <label>総ゲーム数：<input type="number" id="games" value="1000"></label><br>
-  <label>BIG回数：<input type="number" id="big" value="5"></label><br>
-  <label>REG回数：<input type="number" id="reg" value="4"></label><br>
-  <label>ぶどう回数：<input type="number" id="budou" value="180"></label><br>
+  <h2>マイジャグ5 設定判別（BIG / REG / ブドウ）</h2>
+
+  <label>総ゲーム数: <input id="games" type="number"></label>
+  <label>BIG回数: <input id="big" type="number"></label>
+  <label>REG回数: <input id="reg" type="number"></label>
+  <label>ブドウ回数: <input id="budou" type="number"></label>
+
   <button onclick="judge()">判別する</button>
 
-  <div id="result"></div>
+  <div id="result" style="margin-top: 20px;"></div>
 
   <script>
     const settings = [1, 2, 3, 4, 5, 6];
+
+    // 各設定ごとの確率（分母ベース）
     const rates = {
-      big: [1/273.1, 1/270.8, 1/266.4, 1/254.0, 1/240.1, 1/229.1],
-      reg: [1/409.6, 1/385.5, 1/336.1, 1/290.0, 1/268.6, 1/229.1],
-      budou: [1/5.88, 1/5.84, 1/5.80, 1/5.75, 1/5.75, 1/5.65]
+      big: [1 / 273.1, 1 / 270.8, 1 / 266.4, 1 / 254.0, 1 / 240.1, 1 / 229.1],
+      reg: [1 / 409.6, 1 / 385.5, 1 / 336.1, 1 / 290.0, 1 / 268.6, 1 / 229.1],
+      budou: [1 / 5.88, 1 / 5.84, 1 / 5.80, 1 / 5.75, 1 / 5.75, 1 / 5.65],
     };
 
-    function factorial(n) {
-      if (n === 0 || n === 1) return 1;
-      let res = 1;
-      for (let i = 2; i <= n; i++) res *= i;
-      return res;
+    // log(n!)のStirling近似
+    function logFactorial(n) {
+      if (n === 0 || n === 1) return 0;
+      return n * Math.log(n) - n + 0.5 * Math.log(2 * Math.PI * n);
     }
 
-    function binomialPMF(k, n, p) {
-      if (n === 0 || isNaN(k) || isNaN(n)) return 1;
-      if (p === 0 || p === 1) return 0;
-      const comb = factorial(n) / (factorial(k) * factorial(n - k));
-      return comb * Math.pow(p, k) * Math.pow(1 - p, n - k);
+    // log版の二項分布（確率質量関数）
+    function binomialPMF_log(k, n, p) {
+      if (isNaN(k) || isNaN(n) || p === 0 || p === 1 || k > n) return -Infinity;
+      const logComb = logFactorial(n) - logFactorial(k) - logFactorial(n - k);
+      const logProb = logComb + k * Math.log(p) + (n - k) * Math.log(1 - p);
+      return logProb;
     }
 
     function judge() {
       const resultDiv = document.getElementById('result');
-      const g = parseInt(document.getElementById('games').value);
-      const b = parseInt(document.getElementById('big').value);
-      const r = parseInt(document.getElementById('reg').value);
-      const bd = parseInt(document.getElementById('budou').value);
+      const games = parseInt(document.getElementById('games').value);
+      const big = parseInt(document.getElementById('big').value);
+      const reg = parseInt(document.getElementById('reg').value);
+      const budou = parseInt(document.getElementById('budou').value);
 
-      const probs = settings.map((_, i) => {
-        const pb = binomialPMF(b, g, rates.big[i]);
-        const pr = binomialPMF(r, g, rates.reg[i]);
-        const pbd = binomialPMF(bd, g, rates.budou[i]);
-        return pb * pr * pbd;
+      if (isNaN(games) || games <= 0) {
+        resultDiv.innerHTML = '総ゲーム数を正しく入力してください';
+        return;
+      }
+
+      const inputData = { big, reg, budou };
+      const logPs = settings.map((_, i) => {
+        let sum = 0;
+        for (const key in inputData) {
+          const val = inputData[key];
+          if (!isNaN(val)) {
+            const p = rates[key][i];
+            sum += binomialPMF_log(val, games, p);
+          }
+        }
+        return sum;
       });
 
-      const total = probs.reduce((a, b) => a + b, 0);
-      const percents = probs.map(p => (p / total * 100).toFixed(2));
+      // 正規化処理
+      const maxLog = Math.max(...logPs);
+      const probs = logPs.map(lp => Math.exp(lp - maxLog));
+      const sumProb = probs.reduce((a, b) => a + b, 0);
+      const percents = probs.map(p => (p / sumProb * 100).toFixed(2));
 
-      resultDiv.innerHTML = '<h3>判別結果（二項分布）</h3><ul>' + settings.map((s, i) =>
+      resultDiv.innerHTML = '<h3>判別結果</h3><ul>' + settings.map((s, i) =>
         `<li>設定${s}: ${percents[i]}%</li>`
       ).join('') + '</ul>';
     }
