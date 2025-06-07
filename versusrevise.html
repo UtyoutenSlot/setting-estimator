@@ -2,11 +2,12 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>バーサスリヴァイズ設定判別</title>
   <style>
     body {
       font-family: sans-serif;
+      font-size: 16px; /* ズーム防止 */
       margin: 0;
       padding: 1em;
       background: #f5f5f5;
@@ -24,80 +25,135 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .section h2 {
-      font-size: 1.1em;
-      margin-bottom: 0.5em;
-    }
-    .input-group {
-      display: flex;
-      align-items: center;
-      margin: 4px 0;
-    }
-    .input-group label {
-      flex: 1;
-      font-size: 0.9em;
-    }
-    .input-group button {
-      width: 32px;
-      height: 32px;
-      font-size: 1.1em;
-    }
-    .input-group input {
-      width: 60px;
-      text-align: center;
-      margin: 0 4px;
-    }
-    button#judgeBtn, button#screenshotBtn {
-      width: 100%;
-      padding: 12px;
       font-size: 1em;
-      margin-top: 1em;
+      margin-bottom: 0.5em;
+      border-bottom: 1px solid #ddd;
     }
-    .result {
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .row label {
+      flex: 1 1 30%;
+      font-size: 0.85em;
+    }
+    .row input {
+      width: 60px;
+      font-size: 16px;
+    }
+    input[type="date"], input[type="text"] {
+      width: 100%;
+      font-size: 16px;
+    }
+    .result, .footer {
       background: #fff;
       padding: 1em;
       border-radius: 6px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 1em;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
       margin-top: 1em;
     }
   </style>
 </head>
 <body>
   <h1>バーサスリヴァイズ設定判別</h1>
-
   <form id="judgeForm">
 
-    <div class="section" id="section1">
+    <div class="section">
       <h2>① 総ゲーム数と小役</h2>
-      <div class="input-group"><label>総G数</label><button type="button" onclick="chg('g1',-1)">−</button><input id="g1" type="number" value="0"/><button type="button" onclick="chg('g1',1)">＋</button></div>
-      <div class="input-group"><label>BIG</label><button type="button" onclick="chg('big',-1)">−</button><input id="big" type="number" value="0"/><button type="button" onclick="chg('big',1)">＋</button></div>
-      <div class="input-group"><label>REG</label><button type="button" onclick="chg('reg',-1)">−</button><input id="reg" type="number" value="0"/><button type="button" onclick="chg('reg',1)">＋</button></div>
-      <div class="input-group"><label>ベルA</label><button type="button" onclick="chg('bellA',-1)">−</button><input id="bellA" type="number" value="0"/><button type="button" onclick="chg('bellA',1)">＋</button></div>
-      <div class="input-group"><label>ベルB</label><button type="button" onclick="chg('bellB',-1)">−</button><input id="bellB" type="number" value="0"/><button type="button" onclick="chg('bellB',1)">＋</button></div>
-      <div class="input-group"><label>スイカA</label><button type="button" onclick="chg('suikaA',-1)">−</button><input id="suikaA" type="number" value="0"/><button type="button" onclick="chg('suikaA',1)">＋</button></div>
-      <div class="input-group"><label>チェリーB</label><button type="button" onclick="chg('cherryB',-1)">−</button><input id="cherryB" type="number" value="0"/><button type="button" onclick="chg('cherryB',1)">＋</button></div>
+      <div class="row">
+        <label>総G数 <input type="number" id="g1" /></label>
+        <label>BIG <input type="number" id="big" /></label>
+        <label>REG <input type="number" id="reg" /></label>
+      </div>
+      <div class="row">
+        <label>ベルA <input type="number" id="bellA" /></label>
+        <label>ベルB <input type="number" id="bellB" /></label>
+        <label>スイカA <input type="number" id="suikaA" /></label>
+      </div>
+      <div class="row">
+        <label>チェリーB <input type="number" id="cherryB" /></label>
+      </div>
     </div>
 
-    <!-- 以下、②〜⑤などは同じ構成で続けて追加していきます -->
-    <!-- 今回はレイアウト例として①まで完成、残りもすぐ続けられます -->
+    <div class="section">
+      <h2>② BIG中</h2>
+      <div class="row">
+        <label>BIG中G数 <input type="number" id="g2" /></label>
+        <label>角チェ+ベル <input type="number" id="kakubell" /></label>
+        <label>角チェ <input type="number" id="kakuke" /></label>
+      </div>
+      <div class="row">
+        <label>中段チェ <input type="number" id="chudan" /></label>
+      </div>
+    </div>
 
-    <button id="judgeBtn" type="button" onclick="alert('ここで判別ロジック実行予定')">判別する</button>
-    <button id="screenshotBtn" type="button" onclick="location.href='result.html'">スクリーンショット出力 →</button>
+    <div class="section">
+      <h2>③ REG中</h2>
+      <div class="row">
+        <label>REG中G数 <input type="number" id="g3" /></label>
+        <label>1枚役 <input type="number" id="onecoin" /></label>
+        <label>ハズレ <input type="number" id="hazure3" /></label>
+      </div>
+    </div>
 
+    <div class="section">
+      <h2>④ VC中</h2>
+      <div class="row">
+        <label>VC中G数 <input type="number" id="g4" /></label>
+        <label>リプレイ <input type="number" id="vcReplay" /></label>
+        <label>ハズレ <input type="number" id="vcHazure" /></label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⑤ VG中</h2>
+      <div class="row">
+        <label>VG中G数 <input type="number" id="g5" /></label>
+        <label>RTリプ <input type="number" id="vgReplay" /></label>
+        <label>ハズレ <input type="number" id="vgHazure" /></label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⑥ REG終了画面（赤帯）</h2>
+      <div class="row">
+        <label>0G 1回目 <input type="number" id="end0_1" /></label>
+        <label>0G 2回目 <input type="number" id="end0_2" /></label>
+        <label>0G 3回目 <input type="number" id="end0_3" /></label>
+      </div>
+      <div class="row">
+        <label>RT1回目 <input type="number" id="endrt_1" /></label>
+        <label>RT2回目 <input type="number" id="endrt_2" /></label>
+        <label>RT3回目 <input type="number" id="endrt_3" /></label>
+      </div>
+      <div class="row">
+        <label>非RT <input type="number" id="end_other" /></label>
+        <label>赤帯出現あり？ <input type="checkbox" id="aka_flag" /></label>
+      </div>
+    </div>
+
+    <div class="section footer">
+      <h2>補足情報</h2>
+      <div class="row">
+        <label>日付 <input type="date" id="date" /></label>
+        <label>番台 <input type="text" id="stand" /></label>
+        <label>店舗 <input type="text" id="shop" /></label>
+      </div>
+      <div class="row">
+        <label style="flex: 1 1 100%;">メモ<textarea id="memo" rows="3" style="width: 100%;"></textarea></label>
+      </div>
+    </div>
+
+    <button type="button" onclick="alert('判別ロジックは後で組み込み')">判別する</button>
+    <button type="button" onclick="location.href='result.html'">スクリーンショット出力 →</button>
   </form>
-
-  <div class="result" id="resultArea">
-    <!-- 判別結果ここに表示 -->
-  </div>
-
-  <script>
-    function chg(id, delta) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      let v = parseInt(el.value || "0");
-      v += delta;
-      if (v < 0) v = 0;
-      el.value = v;
-    }
-  </script>
 </body>
 </html>
