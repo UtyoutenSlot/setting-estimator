@@ -1,1 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>バーサスリヴァイズ設定判別</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      font-size: 16px;
+      margin: 0;
+      padding: 1em;
+      background: #f5f5f5;
+    }
+    h1 {
+      font-size: 1.2em;
+      text-align: center;
+      margin-bottom: 0.5em;
+    }
+    .section {
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .section h2 {
+      font-size: 1em;
+      margin-bottom: 5px;
+      border-bottom: 1px solid #ccc;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .row label {
+      flex: 1 1 30%;
+      font-size: 0.8em;
+    }
+    .row input {
+      width: 60px;
+      font-size: 16px;
+    }
+    input[type="date"], input[type="text"], textarea {
+      width: 100%;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+    .half {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+    }
+    .half .section {
+      flex: 1 1 48%;
+    }
+  </style>
+</head>
+<body>
+  <h1>バーサスリヴァイズ設定判別</h1>
 
+  <div class="section">
+    <h2>① ボーナス＆小役</h2>
+    <div class="row">
+      <label>総G数 <input type="number" id="g1" /></label>
+      <label>BIG <input type="number" id="big" /></label>
+      <label>REG <input type="number" id="reg" /></label>
+    </div>
+    <div class="row">
+      <label>ベルA <input type="number" id="bellA" /></label>
+      <label>ベルB <input type="number" id="bellB" /></label>
+      <label>スイカA <input type="number" id="suikaA" /></label>
+    </div>
+    <div class="row">
+      <label>チェリーB <input type="number" id="cherryB" /></label>
+    </div>
+  </div>
+
+  <div class="half">
+    <div class="section">
+      <h2>② BIG中</h2>
+      <div class="row">
+        <label>BIG中G数 <input type="number" id="g2" /></label>
+        <label>角チェ+ベル <input type="number" id="kakubell" /></label>
+        <label>角チェ <input type="number" id="kakuke" /></label>
+        <label>中段チェ <input type="number" id="chudan" /></label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>③ REG中</h2>
+      <div class="row">
+        <label>REG中G数 <input type="number" id="g3" /></label>
+        <label>1枚役 <input type="number" id="onecoin" /></label>
+        <label>ハズレ <input type="number" id="hazure3" /></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="half">
+    <div class="section">
+      <h2>④ VC中</h2>
+      <div class="row">
+        <label>VC中G数 <input type="number" id="g4" /></label>
+        <label>リプレイ <input type="number" id="vcReplay" /></label>
+        <label>ハズレ <input type="number" id="vcHazure" /></label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⑤ VG中</h2>
+      <div class="row">
+        <label>VG中G数 <input type="number" id="g5" /></label>
+        <label>RTリプ <input type="number" id="vgReplay" /></label>
+        <label>ハズレ <input type="number" id="vgHazure" /></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>⑥ REG終了画面（赤帯）</h2>
+    <div class="row">
+      <label>0G 1回目 <input type="number" id="end0_1" /></label>
+      <label>0G 2回目 <input type="number" id="end0_2" /></label>
+      <label>0G 3回目 <input type="number" id="end0_3" /></label>
+    </div>
+    <div class="row">
+      <label>RT 1回目 <input type="number" id="endrt_1" /></label>
+      <label>RT 2回目 <input type="number" id="endrt_2" /></label>
+      <label>RT 3回目 <input type="number" id="endrt_3" /></label>
+    </div>
+    <div class="row">
+      <label>非RT <input type="number" id="end_other" /></label>
+      <label>赤帯出現<input type="checkbox" id="aka_flag" /></label>
+    </div>
+  </div>
+
+  <button type="button" style="font-size:1.2em; font-weight:bold;">判別する</button>
+
+  <div class="section">
+    <h2>補足情報</h2>
+    <div class="row">
+      <label>日付 <input type="date" id="date" /></label>
+      <label>番台 <input type="text" id="stand" /></label>
+      <label>店舗 <input type="text" id="shop" /></label>
+    </div>
+    <div class="row">
+      <label style="flex:1 1 100%;">メモ<textarea id="memo" rows="2"></textarea></label>
+    </div>
+  </div>
+
+  <button type="button" onclick="location.href='result.html'">スクリーンショット出力 →</button>
+</body>
+</html>
