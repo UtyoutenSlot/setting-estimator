@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>設定判別 入力画面</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      background-color: #f2f2f2;
+    }
+
+    .wrapper {
+  display: grid;
+  row-gap: 4px;
+  width: 375px;
+}
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 125px);
+      grid-template-rows: repeat(18, 28px);
+      gap: 4px;
+      margin-bottom: 0;
+      overflow: hidden;
+    }
+
+    .box {
+      background: #fff;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .box h3 {
+      margin: 4px 0 8px;
+      font-size: 13px;
+    }
+
+    .row {
+      margin: 8px 0;
+    }
+
+    .row label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .row input[type="number"] {
+      width: 80px;
+      height: 24px;
+      text-align: center;
+      border: 1px solid #333;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    /* 色分け */
+    .green { background: #dff3e0; }
+    .yellow { background: #fdf8c6; }
+    .blue { background: #cce7f9; }
+    .pink { background: #f8d7f2; }
+    .purple { background: #e5d4f5; }
+    .orange { background: #ffe4b5; }
+
+    .box.orange {
+  margin-top: -20px;
+  padding-top: 0;
+}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    
+    <div class="grid">
+      <!-- ボーナス・小役 -->
+      <div class="box green" style="grid-row: span 16;">
+        <h3>ボーナス・小役</h3>
+        <div class="row"><label>総G数</label><input type="number"></div>
+        <div class="row"><label>BIG</label><input type="number"></div>
+        <div class="row"><label>REG</label><input type="number"></div>
+        <div class="row"><label>ベルA</label><input type="number"></div>
+        <div class="row"><label>ベルB</label><input type="number"></div>
+        <div class="row"><label>スイカA</label><input type="number"></div>
+        <div class="row"><label>チェリーB</label><input type="number"></div>
+      </div>
+
+      <!-- BIG中 -->
+      <div class="box yellow" style="grid-row: span 9;">
+        <h3>BIG中</h3>
+        <div class="row"><label>総G数</label><input type="number"></div>
+        <div class="row"><label>角チェベル</label><input type="number"></div>
+        <div class="row"><label>角チェ</label><input type="number"></div>
+        <div class="row"><label>中段チェ</label><input type="number"></div>
+      </div>
+
+      <!-- REG中 -->
+      <div class="box blue" style="grid-row: span 9;">
+        <h3>REG中</h3>
+        <div class="row"><label>総G数</label><input type="number"></div>
+        <div class="row"><label>一枚役</label><input type="number"></div>
+        <div class="row"><label>ハズレ</label><input type="number"></div>
+      </div>
+
+      <!-- VC中 -->
+      <div class="box pink" style="grid-row: span 7;">
+        <h3>VC中</h3>
+        <div class="row"><label>総G数</label><input type="number"></div>
+        <div class="row"><label>通常リプ</label><input type="number"></div>
+        <div class="row"><label>ハズレ</label><input type="number"></div>
+      </div>
+
+      <!-- VG中 -->
+      <div class="box purple" style="grid-row: span 7;">
+        <h3>VG中</h3>
+        <div class="row"><label>総G数</label><input type="number"></div>
+        <div class="row"><label>RTリプ</label><input type="number"></div>
+        <div class="row"><label>ハズレ</label><input type="number"></div>
+      </div>
+    </div>
+
+    <!-- REG終了画面 -->
+    <div class="box orange" style="margin-top: 0;">
+      <div class="row" style="display: flex; align-items: center; gap: 8px;">
+        <h3 style="margin: 0; font-size: 13px;">REG終了画面</h3>
+        <label style="font-size: 13px; display: flex; align-items: center; gap: 4px;">
+          <input type="checkbox" id="regEndCheck"> 赤帯出現あり
+        </label>
+      </div>
+
+      <!-- 出現率入力欄 -->
+      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/128</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/32</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/16</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/8</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/5.2</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/4</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/2</span></div>
+    </div>
+  </div>
+</body>
+</html>
