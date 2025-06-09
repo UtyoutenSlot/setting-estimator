@@ -1,1 +1,43 @@
-index/index.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>設定判別ツール集</title>
+</head>
+<body>
+  <h1>設定判別ツール集</h1>
+
+  <input type="text" id="searchInput" placeholder="機種名で検索">
+  <button onclick="searchMachine()">検索</button>
+
+  <h2>50音検索</h2>
+  <div id="kanaLinks">
+    あ か さ た な は ま や ら わ
+  </div>
+
+  <h2>人気機種</h2>
+  <ul>
+    <li><a href="versusrevise.html">バーサスリヴァイズ</a></li>
+    <li><a href="myjuggler5.html">マイジャグラーV</a></li>
+  </ul>
+
+  <script>
+    // 仮の機種データ（後でJSONに分離可）
+    const machines = [
+      { name: "バーサスリヴァイズ", link: "versusrevise.html" },
+      { name: "マイジャグラーV", link: "myjuggler5.html" },
+      { name: "アイムジャグラーEX", link: "imjuggler.html" }
+    ];
+
+    function searchMachine() {
+      const keyword = document.getElementById("searchInput").value;
+      const found = machines.find(m => m.name.includes(keyword));
+      if (found) {
+        window.location.href = found.link;
+      } else {
+        alert("該当する機種が見つかりません");
+      }
+    }
+  </script>
+</body>
+</html>
