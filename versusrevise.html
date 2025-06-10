@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>設定判別 入力画面</title>
   <style>
     * { box-sizing: border-box; }
@@ -14,6 +15,11 @@
       background-color: #f2f2f2;
     }
 
+      .wrapper {
+  width: 100%;
+  max-width: 375px;
+  margin: 0 auto;
+}
        .grid {
       display: grid;
       grid-template-columns: repeat(3, 125px);
@@ -70,7 +76,7 @@
   </style>
 </head>
 <body>
-  <div>
+  <div class="wrapper">
     
     <div class="grid">
       <!-- ボーナス・小役 -->
