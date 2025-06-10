@@ -90,13 +90,13 @@
       </div>
 
       <!-- BIG中 -->
-      <div class="box yellow" style="grid-row: span 9;">
-        <h3>BIG中</h3>
-        <div class="row"><label>総G数</label><input type="number"></div>
-        <div class="row"><label>角チェベル</label><input type="number"></div>
-        <div class="row"><label>角チェ</label><input type="number"></div>
-        <div class="row"><label>中段チェ</label><input type="number"></div>
-      </div>
+<div class="box yellow" style="grid-row: span 9;">
+  <h3>BIG中</h3>
+  <div class="row"><label>総G数</label><input id="bigTotal" type="number"></div>
+  <div class="row"><label>角チェベル</label><input id="kakubell" type="number"></div>
+  <div class="row"><label>角チェ</label><input id="kakuke" type="number"></div>
+  <div class="row"><label>中段チェ</label><input id="chudan" type="number"></div>
+</div>
 
       <!-- REG中 -->
       <div class="box blue" style="grid-row: span 9;">
@@ -233,10 +233,56 @@
 </div>
 
 <script>
+  function logFact(n) {
+    if (n === 0 || n === 1) return 0;
+    let res = 0;
+    for (let i = 2; i <= n; i++) res += Math.log(i);
+    return res;
+  }
+
+  function binomialLogP(k, n, p) {
+    if (k > n || p <= 0 || p >= 1) return -Infinity;
+    return logFact(n) - logFact(k) - logFact(n - k) + k * Math.log(p) + (n - k) * Math.log(1 - p);
+  }
+
   function showResult() {
     document.getElementById("resultArea").style.display = "block";
 
-    // 日付初期値を設定（今日）
+    // 🟡 BIG中の判別処理
+    const bigTotal = parseInt(document.getElementById("bigTotal").value || 0);
+    const kakubell = parseInt(document.getElementById("kakubell").value || 0);
+    const kakuke   = parseInt(document.getElementById("kakuke").value || 0);
+    const chudan   = parseInt(document.getElementById("chudan").value || 0);
+
+    const rates = {
+      kakubell: [1/11.1, 1/8.9, 1/11.1, 1/8.9],
+      kakuke:   [1/256.0, 1/128.0, 1/256.0, 1/128.0],
+      chudan:   [1/16384, 1/16384, 1/16384, 1/897.8],
+    };
+
+    const logs = [0, 0, 0, 0];
+    const keys = ['kakubell', 'kakuke', 'chudan'];
+    const counts = [kakubell, kakuke, chudan];
+
+    keys.forEach((key, i) => {
+      for (let s = 0; s < 4; s++) {
+        logs[s] += binomialLogP(counts[i], bigTotal, rates[key][s]);
+      }
+    });
+
+    // 正規化して%化
+    const maxLog = Math.max(...logs);
+    const expLogs = logs.map(l => Math.exp(l - maxLog));
+    const total = expLogs.reduce((a, b) => a + b);
+    const percents = expLogs.map(v => (v / total * 100).toFixed(2) + "%");
+
+    // 表に反映（BIG中列: 3列目 = index 3）
+    const rows = document.querySelectorAll("#resultArea tbody tr");
+    rows.forEach((tr, i) => {
+      tr.children[3].innerText = percents[i]; // 3列目がBIG中
+    });
+
+    // 日付の初期値設定（1回だけで良い処理）
     const dateField = document.getElementById("dateInput");
     if (dateField && !dateField.value) {
       const today = new Date().toISOString().split("T")[0];
@@ -244,7 +290,6 @@
     }
   }
 </script>
-
   </div>
 
   <div style="text-align: center; margin-top: 20px;">
