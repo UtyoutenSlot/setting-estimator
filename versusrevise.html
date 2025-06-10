@@ -77,9 +77,9 @@
   <div class="wrapper">
     
     <div class="grid">
-      <!-- ボーナス・小役 -->
+      <!-- BONUS小役 -->
       <div class="box green" style="grid-row: span 16;">
-        <h3>ボーナス・小役</h3>
+        <h3>Bonus小役</h3>
         <div class="row"><label>総G数</label><input type="number"></div>
         <div class="row"><label>BIG</label><input type="number"></div>
         <div class="row"><label>REG</label><input type="number"></div>
@@ -123,24 +123,58 @@
       </div>
     </div>
 
-    <!-- REG終了画面 -->
-    <div class="box orange" style="margin-top: 0;">
-      <div class="row" style="display: flex; align-items: center; gap: 8px;">
-        <h3 style="margin: 0; font-size: 13px;">REG終了画面</h3>
+   <!-- REG終了画面（左右分割スタイル） -->
+<div class="box orange" style="margin-top: 0; padding: 8px;">
+  <div style="display: flex; gap: 8px;">
+    
+    <!-- 左側：入力欄 -->
+    <div style="flex: 1;">
+      <div class="row" style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        <h3 style="margin: 0; font-size: 13px;">REG画面</h3>
         <label style="font-size: 13px; display: flex; align-items: center; gap: 4px;">
-          <input type="checkbox" id="regEndCheck"> 赤帯出現あり
+          <input type="checkbox" id="regEndCheck"> 赤帯出現
         </label>
       </div>
-
-      <!-- 出現率入力欄 -->
-      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/128</span></div>
-      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/32</span></div>
-      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/16</span></div>
-      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/8</span></div>
-      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/5.2</span></div>
-      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/4</span></div>
-      <div class="row" style="display: flex; align-items: center; gap: 8px;"><input type="number" style="width: 80px;"><span>1/2</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 6px;"><input type="number" style="width: 60px;"><span>1/128</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 6px;"><input type="number" style="width: 60px;"><span>1/32</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 6px;"><input type="number" style="width: 60px;"><span>1/16</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 6px;"><input type="number" style="width: 60px;"><span>1/8</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 6px;"><input type="number" style="width: 60px;"><span>1/5.2</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 6px;"><input type="number" style="width: 60px;"><span>1/4</span></div>
+      <div class="row" style="display: flex; align-items: center; gap: 6px;"><input type="number" style="width: 60px;"><span>1/2</span></div>
     </div>
+
+   <!-- 右側：注意書き＋表（縦に並べて下詰め） -->
+<div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end;">
+  <div style="font-size: 10px; line-height: 1.4; margin-bottom: 4px;">
+    <p style="margin: 2px 0;">※赤帯出現時はチェックボックスにチェックを入れてください。</p>
+    <p style="margin: 2px 0;">※チェックを入れた場合はREG回数の入力は不要です。</p>
+    <p style="margin: 2px 0;">
+      ※赤帯が出現していない場合、下記の表を参考に <strong>赤帯が出なかった REG</strong> の回数を入力してください。
+    </p>
+  </div>
+
+  <table style="font-size: 10px; width: 100%; border-collapse: collapse; text-align: center;">
+    <thead>
+      <tr style="background: #f5f5f5;">
+        <th style="border: 1px solid #ccc; padding: 2px;">一枚役＼RT</th>
+        <th style="border: 1px solid #ccc; padding: 2px;">無</th>
+        <th style="border: 1px solid #ccc; padding: 2px;">2</th>
+        <th style="border: 1px solid #ccc; padding: 2px;">3+</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="border: 1px solid #ccc;">1回以下</td><td>1/128</td><td>1/32</td><td>1/16</td></tr>
+      <tr><td style="border: 1px solid #ccc;">2回</td><td>1/32</td><td>1/16</td><td>1/8</td></tr>
+      <tr><td style="border: 1px solid #ccc;">3回</td><td>1/16</td><td>1/8</td><td>1/5.2</td></tr>
+      <tr><td style="border: 1px solid #ccc;">4回</td><td>1/8</td><td>1/4</td><td>1/4</td></tr>
+      <tr><td style="border: 1px solid #ccc;">5回以上</td><td>1/4</td><td>1/2</td><td><strong>1/2</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+  </div>
+</div>
 
     <div style="text-align: center; margin-top: 16px;">
   <a href="index.html">＜ 機種選択に戻る</a>
